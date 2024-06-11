@@ -1,0 +1,23 @@
+version: '3'
+services:
+  # Spring Boot Application
+  spring-boot-app:
+    image: amiralamti/srping:latest
+    ports:
+      - "9999:9999"
+    networks:
+      - app-network
+
+  # Angular Application
+  angular-app:
+    image:  amiralamti/angular:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - spring-boot-app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

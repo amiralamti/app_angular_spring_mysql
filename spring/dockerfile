@@ -1,0 +1,35 @@
+# Use an official Maven image with JDK 17 as a base image
+FROM maven:3.8.4-openjdk-17-slim AS builder
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the pom.xml file to the container
+COPY pom.xml .
+
+# Download Maven dependencies (but don't copy the whole project yet)
+RUN mvn dependency:go-offline
+
+# Copy the rest of the application code to the container
+COPY src /app/src
+
+# Build the application
+RUN mvn package 
+
+# Use an OpenJDK 17 image as the final base image
+FROM openjdk:17
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the JAR file from the builder stage to the final stage
+COPY --from=builder /app/target/*.jar ./projetjee.jar
+
+# Expose the port on which the Spring Boot app will run
+EXPOSE 9999
+
+# Define the command to run the application
+CMD ["java", "-jar", "projetjee.jar"]
+
+
+
